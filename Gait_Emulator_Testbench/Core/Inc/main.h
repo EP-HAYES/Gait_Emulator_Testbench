@@ -59,25 +59,26 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define EVENT_SENSOR (1 << 0)
-#define EVENT_UART_RX (1 << 1)
-#define EVENT_COMM_TX (1 << 2)
+#define COMM_TX (1 << 2)
+#define COMM_RX (1 << 1)
+#define SENSORS_SAMPLED (1 << 0)
+#define STATE_CHANGE (1 << 3)
+#define DATA_READY (1 << 4)
+#define ENABLE_SAMPLING (1 << 5)
 #define EM_STOP_Pin GPIO_PIN_13
 #define EM_STOP_GPIO_Port GPIOC
 #define EM_STOP_EXTI_IRQn EXTI15_10_IRQn
-#define BLDC_DIR_Pin GPIO_PIN_14
-#define BLDC_DIR_GPIO_Port GPIOC
-#define BLDC_EN_Pin GPIO_PIN_15
-#define BLDC_EN_GPIO_Port GPIOC
+#define STEP_EN_Pin GPIO_PIN_15
+#define STEP_EN_GPIO_Port GPIOC
 #define STG_DATA_Pin GPIO_PIN_2
 #define STG_DATA_GPIO_Port GPIOC
 #define LIMIT_Pin GPIO_PIN_3
 #define LIMIT_GPIO_Port GPIOC
 #define LIMIT_EXTI_IRQn EXTI3_IRQn
-#define BLDC_ENCA_Pin GPIO_PIN_0
-#define BLDC_ENCA_GPIO_Port GPIOA
-#define BLDC_ENCB_Pin GPIO_PIN_1
-#define BLDC_ENCB_GPIO_Port GPIOA
+#define HIGHSIDE1_Pin GPIO_PIN_0
+#define HIGHSIDE1_GPIO_Port GPIOA
+#define HIGHSIDE2_Pin GPIO_PIN_1
+#define HIGHSIDE2_GPIO_Port GPIOA
 #define LED_PIN_Pin GPIO_PIN_5
 #define LED_PIN_GPIO_Port GPIOA
 #define AMPS_Pin GPIO_PIN_6
@@ -88,14 +89,14 @@ void Error_Handler(void);
 #define LOWSIDE2_GPIO_Port GPIOC
 #define STG_SCL_Pin GPIO_PIN_0
 #define STG_SCL_GPIO_Port GPIOB
+#define STEP_ENCA_Pin GPIO_PIN_1
+#define STEP_ENCA_GPIO_Port GPIOB
 #define SPD_INC_Pin GPIO_PIN_12
 #define SPD_INC_GPIO_Port GPIOB
 #define LOWSIDE1_Pin GPIO_PIN_14
 #define LOWSIDE1_GPIO_Port GPIOB
-#define HIGHSIDE1_Pin GPIO_PIN_6
-#define HIGHSIDE1_GPIO_Port GPIOC
-#define HIGHSIDE2_Pin GPIO_PIN_8
-#define HIGHSIDE2_GPIO_Port GPIOC
+#define STEP_ENCB_Pin GPIO_PIN_6
+#define STEP_ENCB_GPIO_Port GPIOC
 #define SPD_ENC_Pin GPIO_PIN_9
 #define SPD_ENC_GPIO_Port GPIOC
 #define INC_PLUS_Pin GPIO_PIN_11
@@ -108,8 +109,8 @@ void Error_Handler(void);
 #define TCK_GPIO_Port GPIOA
 #define SPD_MINUS_Pin GPIO_PIN_6
 #define SPD_MINUS_GPIO_Port GPIOB
-#define BLDC_PULSE_Pin GPIO_PIN_7
-#define BLDC_PULSE_GPIO_Port GPIOB
+#define STEP_PULSE_Pin GPIO_PIN_7
+#define STEP_PULSE_GPIO_Port GPIOB
 #define IMU_SCL_Pin GPIO_PIN_8
 #define IMU_SCL_GPIO_Port GPIOB
 #define IMU_SDA_Pin GPIO_PIN_9
