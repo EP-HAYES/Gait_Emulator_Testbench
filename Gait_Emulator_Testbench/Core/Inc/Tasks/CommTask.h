@@ -17,6 +17,7 @@
 
 #define WATCHDOG_TIMEOUT	14
 #define COMMTASK_TIMEOUT	20
+#define RX_RESEND		(char)"RX_RESEND"
 
 typedef struct __attribute__((packed, aligned(4)))
 {
@@ -39,7 +40,9 @@ typedef struct __attribute__((packed, aligned(4)))
 {
     bool isAlive;
     bool PingRx;
+    bool InternalCommError;
     TickType_t Freq;
+
 
 }VcpConnectData;
 
