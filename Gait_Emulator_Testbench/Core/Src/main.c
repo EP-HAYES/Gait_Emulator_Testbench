@@ -153,6 +153,7 @@ int main(void)
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
 
+
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -218,6 +219,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }
@@ -704,7 +706,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14|STEP_EN_Pin|LOWSIDE2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, STEP_DIR_Pin|STEP_EN_Pin|LOWSIDE2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, LED_PIN_Pin|INC_PLUS_Pin|INC_MINUS_Pin, GPIO_PIN_RESET);
@@ -718,8 +720,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PC14 STEP_EN_Pin LOWSIDE2_Pin */
-  GPIO_InitStruct.Pin = GPIO_PIN_14|STEP_EN_Pin|LOWSIDE2_Pin;
+  /*Configure GPIO pins : STEP_DIR_Pin STEP_EN_Pin LOWSIDE2_Pin */
+  GPIO_InitStruct.Pin = STEP_DIR_Pin|STEP_EN_Pin|LOWSIDE2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

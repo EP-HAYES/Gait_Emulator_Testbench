@@ -59,15 +59,17 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define COMM_TX (1 << 2)
-#define COMM_RX (1 << 1)
-#define SENSORS_SAMPLED (1 << 0)
-#define STATE_CHANGE (1 << 3)
-#define DATA_READY (1 << 4)
-#define ENABLE_SAMPLING (1 << 5)
+#define DATA_READY (1UL << 3)
+#define COMM_TX (1UL << 1)
+#define STATE_CHANGE (1UL << 2)
+#define ENABLE_SAMPLING (1UL << 4)
+#define COMM_RX (1UL << 0)
+#define SENSORS_SAMPLED (1UL << 5)
 #define EM_STOP_Pin GPIO_PIN_13
 #define EM_STOP_GPIO_Port GPIOC
 #define EM_STOP_EXTI_IRQn EXTI15_10_IRQn
+#define STEP_DIR_Pin GPIO_PIN_14
+#define STEP_DIR_GPIO_Port GPIOC
 #define STEP_EN_Pin GPIO_PIN_15
 #define STEP_EN_GPIO_Port GPIOC
 #define STG_DATA_Pin GPIO_PIN_2

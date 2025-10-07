@@ -10,11 +10,27 @@
 
 /* Includes ------------------------------------------------------------------*/
 
-
+#include "cmsis_os.h"
+#include "main.h"
 
 /* Private define ------------------------------------------------------------*/
 
+typedef enum
+{
+    Sleep,
+    Boot,
+    Idle,
+    Test,
+    Run,
+    Error
 
+}SystemStates;
+
+typedef struct
+{
+    SystemStates State;
+
+}SystemData;
 
 /* Private variables ---------------------------------------------------------*/
 
