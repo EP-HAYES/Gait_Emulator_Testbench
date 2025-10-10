@@ -16,8 +16,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 static RxBuffer[sizeof(RxDataPacket)];
-static RxDataPacket RxMsg;
-static RxDataPacket TaskBuffer;
+static RxDataPacket RxMsgRead;
+static RxDataPacket RxMsgWrite;
 static RxDataPacket TaskMsg;
 static TxDataPacket TxMsg;
 static VcpConnectData CommStats;
@@ -28,9 +28,9 @@ static VcpConnectData CommStats;
 void CommTask_Reset(void)
     {
     memset(RxBuffer, 0, sizeof(RxBuffer));
-    memset(RxMsg, 0, sizeof(RxMsg));
+    memset(RxMsgRead, 0, sizeof(RxMsgRead));
     memset(TxMsg, 0, sizeof(TxMsg));
-    memset(TaskBuffer, 0, sizeof(TaskBuffer));
+    memset(RxMsgWrite, 0, sizeof(RxMsgWrite));
     memset(CommStats, 0, sizeof(CommStats));
     }
 
@@ -46,8 +46,7 @@ void CommTask_Init(void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     {
     BaseType_t pxHigherPriorityTaskWoken = pdFALSE;
-    memcpy(&RxMsg, RxBuffer, sizeof(RxMsg));					//Copy UART Received data buffer to data struct
-    xQueueSendFromISR(CommRxHandle, &RxMsg, pxHigherPriorityTaskWoken);		//Push data struct to queue
+    memcpy(&RxMsgWrite, RxBuffer, sizeof(RxMsgWrite));				//Copy UART Received data buffer to data struct
     if (xTimerIsTimerActive(CommWatchdogHandle) == pdFALSE)
 	{
 	xTimerChangePeriodFromISR( CommWatchdogHandle,				//Start a watch dog timer to monitor the connection
@@ -87,30 +86,41 @@ void CommTask(void const * argument)
 			    pdMS_TO_TICKS(COMMTASK_TIMEOUT) );
 	if (Notification & COMM_RX)
 	    {
-	    BaseType_t pxHigherPriorityTaskWoken = pdFALSE;
-	    if (xQueueReceive(CommRxHandle, &TaskBuffer, 0) == pdPASS)
+	    if (BufferRxData(&RxMsgRead) == HAL_OK)				//Double buffer received data into shareable struct
 		{
-		memcpy(&TaskMsg, &TaskBuffer, sizeof(TaskBuffer));		//Buffer received data into shareable struct
+		if (eTaskGetState(StateMachineHandle) == eSuspended)
+		    {
+		    vTaskResume(StateMachineHandle);
+		    }
+		BaseType_t pxHigherPriorityTaskWoken = pdFALSE;
+		xTaskNotify(StateMachineHandle, STATE_CHANGE, eSetBits);
+		taskYIELD();
 		}
 	    else
 		{
-		memset(TaskMsg, 0, sizeof(TaskMsg));
-		CommStats.InternalCommError = true;
+		Status.ErrCondition.Null_ERR = true;
+		Error_Handler();
 		}
-	    xTaskNotify(StateMachineHandle, STATE_CHANGE, eSetBits);
-	    taskYIELD();
 	    }
 	else if (Notification & COMM_TX)
 	    {
-	    if (CommStats.InternalCommError == true)
+	    if (GetTxData(&TxMsg) == HAL_OK)
 		{
-		TxMsg.Condition = RX_RESEND;
+		HAL_UART_Transmit_DMA(&huart2, (uint8_t*)&TxMsg, Sizeof(TxMsg));
 		}
-	    HAL_UART_Transmit_DMA(&huart2, TxMsg, Sizeof(TxMsg));
+	    else
+		{
+		Status.ErrCondition.Null_ERR = true;
+		Error_Handler();
+		}
 	    }
 	else
 	    {
-	    osDelay(1000);
+	    osDelay(500);							//Wait for all tasks to detect failed communication
+	    if (eTaskGetState(SampleSensorsHandle) == eSuspended) 		//Check that the state machine task has stopped the sampling task
+		{
+		vTaskSuspend(StateMachineHandle);				//Stop state machine task
+		}
 	    }
 
 	}
@@ -125,9 +135,31 @@ void CommDisconnected(void const * argument)
 
 
 //Communication Task -> State Machine Task, memory safe data transfer function
-const RxDataPacket* GetRxData(void)
+void GetRxData(RxDataPacket* Destination)
     {
-    return &TaskMsg;
+    memcpy(Destination, &RxMsgRead, sizeof(RxDataPacket));
+    if (memcmp(Destination, &RxMsgRead, sizeof(RxDataPacket)) == 0)
+	{
+	return HAL_OK;
+	}
+    else
+	{
+	return HAL_ERROR;
+	}
+    }
+
+//UART DMA transfer callback -> Communication Task, memory safe data transfer function
+void BufferRxData(RxDataPacket* Destination)
+    {
+    memcpy(Destination, &RxMsgWrite, sizeof(RxDataPacket));
+    if (memcmp(Destination, &RxMsgWrite, sizeof(RxDataPacket)) == 0)
+	{
+	return HAL_OK;
+	}
+    else
+	{
+	return HAL_ERROR;
+	}
     }
 
 /* End of file ---------------------------------------------------------------*/

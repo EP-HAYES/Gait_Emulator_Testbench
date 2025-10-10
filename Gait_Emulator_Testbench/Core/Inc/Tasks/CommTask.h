@@ -17,13 +17,13 @@
 
 #define WATCHDOG_TIMEOUT	14
 #define COMMTASK_TIMEOUT	20
-#define RX_RESEND		(char)"RX_RESEND"
+#define INPUT_DATA_LEN		2
 
 typedef struct __attribute__((packed, aligned(4)))
 {
     uint8_t Ping;								//Ping is state enum integer
     char Command[11];
-    float InputData[2];
+    float InputData[INPUT_DATA_LEN];
 										//Received data parsing struct
 }RxDataPacket;									//Total struct size 20 bytes
 
@@ -40,7 +40,6 @@ typedef struct __attribute__((packed, aligned(4)))
 {
     bool isAlive;
     bool PingRx;
-    bool InternalCommError;
     TickType_t Freq;
 
 
@@ -59,7 +58,9 @@ void CommTask_Reset(void);
 void CommTask_Init(void);
 void CommTask(void const * argument);
 void CommDisconnected(void const * argument);
-const RxDataPacket* GetRxData(void);
+void GetRxData(RxDataPacket* Destination);
+void BufferRxData(RxDataPacket* Destination);
+
 
 /* End of file ---------------------------------------------------------------*/
 

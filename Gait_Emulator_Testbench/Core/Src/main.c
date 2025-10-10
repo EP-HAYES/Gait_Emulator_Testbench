@@ -23,6 +23,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "CommTask.h"
+#include "StateMachineTask.h"
+#include "SensorSamplingTask.h"
 
 /* USER CODE END Includes */
 
@@ -74,12 +77,6 @@ osStaticThreadDef_t StateMachineControlBlock;
 osThreadId SampleSensorsHandle;
 uint32_t SampleSensorsBuffer[ 1024 ];
 osStaticThreadDef_t SampleSensorsControlBlock;
-osMessageQId CommRxHandle;
-uint8_t CommRxBuffer[ 4 * sizeof( uint16_t ) ];
-osStaticMessageQDef_t CommRxControlBlock;
-osMessageQId CommTxHandle;
-uint8_t CommTxBuffer[ 4 * sizeof( uint16_t ) ];
-osStaticMessageQDef_t CommTxControlBlock;
 osTimerId CommWatchdogHandle;
 osStaticTimerDef_t CommWatchdogControlBlock;
 /* USER CODE BEGIN PV */
@@ -172,15 +169,6 @@ int main(void)
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
-
-  /* Create the queue(s) */
-  /* definition and creation of CommRx */
-  osMessageQStaticDef(CommRx, 4, uint16_t, CommRxBuffer, &CommRxControlBlock);
-  CommRxHandle = osMessageCreate(osMessageQ(CommRx), NULL);
-
-  /* definition and creation of CommTx */
-  osMessageQStaticDef(CommTx, 4, uint16_t, CommTxBuffer, &CommTxControlBlock);
-  CommTxHandle = osMessageCreate(osMessageQ(CommTx), NULL);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
